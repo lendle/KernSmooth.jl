@@ -1,5 +1,8 @@
 module KernSmooth
 
-# package code goes here
+    export locpoly
 
-end # module
+    include("utils.jl")
+    include("locpoly.jl")
+
+end
