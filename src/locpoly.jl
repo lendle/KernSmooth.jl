@@ -4,24 +4,24 @@
 ## The data are discretised on an equally
 ## spaced grid. The bandwidths are discretised on a
 ## logarithmically spaced grid.
-function locpoly{T<:FloatingPoint}(x::Vector{T}, y::Vector{T}, bandwidth::Union(T, Vector{T});
+function locpoly(x::Vector{Float64}, y::Vector{Float64}, bandwidth::Union(Float64, Vector{Float64});
     drv::Int = 0,
     degree::Int=drv+1,
     kernel::Symbol = :normal,
     gridsize::Int = 401,
     bwdisc::Int = 25,
-    range_x::Vector{T}=T[],
+    range_x::Vector{Float64}=Float64[],
     binned::Bool = false,
     truncate::Bool = true)
 
-    if isa(bandwidth, T) && bandwidth <  0.0 
+    if any(bandwidth .<  0.0)
         error("'bandwidth' must be strictly positive")
     end
 
-    if range_x == T[] && !binned
+    if range_x == Float64[] && !binned
         maxx = maximum(x)
         minx = minimum(x)
-        if y == T[]
+        if y == Float64[]
             extra = 0.05 * (maxx - minx)
             range_x = [minx - extra, maxx + extra]
         else
@@ -40,7 +40,7 @@ function locpoly{T<:FloatingPoint}(x::Vector{T}, y::Vector{T}, bandwidth::Union(
 
     ## Decide whether a density estimate or regression estimate is required.
 
-    if y == T[]    # obtain density estimate
+    if y == Float64[]    # obtain density estimate
         n = length(x)
         gpoints = linspace(a, b, M)
         xcounts = linbin(x, gpoints, truncate)
@@ -62,9 +62,9 @@ function locpoly{T<:FloatingPoint}(x::Vector{T}, y::Vector{T}, bandwidth::Union(
     ## Set the bin width
     delta = (b-a)/(M-1)
 
-    indc = T[]
+    indc = Float64[]
     Lvec = Int[]
-    hdisc = T[]
+    hdisc = Float64[]
     indic = Int[]
     ## Discretise the bandwidths
     if length(bandwidth) == M
@@ -118,7 +118,7 @@ function locpoly{T<:FloatingPoint}(x::Vector{T}, y::Vector{T}, bandwidth::Union(
       (Ptr{Float64}, Ptr{Float64}, Ptr{Int}, Ptr{Float64}, Ptr{Float64}, Ptr{Int}, Ptr{Int}, Ptr{Int},
        Ptr{Int}, Ptr{Int}, Ptr{Float64}, Ptr{Int}, Ptr{Int}, Ptr{Float64}, Ptr{Float64}, Ptr{Float64},
        Ptr{Float64}, Ptr{Int}, Ptr{Float64}),
-      xcounts, ycounts,  &drv, &delta, hdisc, Lvec, indic, midpts, &M, &Q, fkap, &pp, &ppp, 
+      xcounts, ycounts,  &drv, &delta, hdisc, Lvec, indic, midpts, &M, &Q, fkap, &pp, &ppp,
       ss, tt, Smat, Tvec, ipvt, curvest)
 
 
@@ -127,4 +127,4 @@ function locpoly{T<:FloatingPoint}(x::Vector{T}, y::Vector{T}, bandwidth::Union(
     (gpoints, curvest)
 end
 
-locpoly{T<:FloatingPoint}(x::Vector{T}, bandwidth::Union(T, Vector{T}); args...) = locpoly(x, Float64[], bandwidth, args...)
+locpoly(x::Vector{Float64}, bandwidth::Union(Float64, Vector{Float64}); args...) = locpoly(x, Float64[], bandwidth, args...)
