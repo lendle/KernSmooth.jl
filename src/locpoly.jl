@@ -113,89 +113,18 @@ function locpoly{T<:FloatingPoint}(x::Vector{T}, y::Vector{T}, bandwidth::Union(
     Tvec = zeros(pp)
     ipvt = zeros(Int, pp)
 
-    # @assert isa(xcounts, Vector{T})
-    # @assert isa(ycounts, Vector{T})
-    # @assert isa(drv, Int)
-    # @assert isa(delta, T)
-    # @assert isa(hdisc, Vector{T})
-    # @assert isa(Lvec, Vector{Int})
-    # @assert isa(indic, Vector{Int})
-    # @assert isa(midpts, Vector{Int})
-    # @assert isa(M, Int)
-    # @assert isa(Q, Int)
-    # @assert isa(fkap, Vector{T})
-    # @assert isa(pp, Int)
-    # @assert isa(ppp, Int)
-    # @assert isa(ss, Matrix{T})
-    # @ascii(::Array{Uint8, 1})sert isa(tt, Matrix{T})
-    # @assert isa(Smat, Matrix{T})
-    # @assert isa(Tvec, Vector{T})
-    # @assert isa(ipvt, Vector{Int})
-    # @assert isa(curvest, Vector{T})
 
-    ## Call FORTRAN routine "locpol"
+    ccall((:locpol_, libkernsmooth), Ptr{Void},
+      (Ptr{Float64}, Ptr{Float64}, Ptr{Int}, Ptr{Float64}, Ptr{Float64}, Ptr{Int}, Ptr{Int}, Ptr{Int},
+       Ptr{Int}, Ptr{Int}, Ptr{Float64}, Ptr{Int}, Ptr{Int}, Ptr{Float64}, Ptr{Float64}, Ptr{Float64},
+       Ptr{Float64}, Ptr{Int}, Ptr{Float64}),
+      xcounts, ycounts,  &drv, &delta, hdisc, Lvec, indic, midpts, &M, &Q, fkap, &pp, &ppp, 
+      ss, tt, Smat, Tvec, ipvt, curvest)
 
-    mid = Lvec[1] + 1
-    for i in 1:Q-1
-        midpts[i] = mid
-        fkap[mid] = 1.0
-        for j = 1:Lvec[i]
-            fkap[mid+j] = exp(-(delta*j/hdisc[i])^2/2)
-            fkap[mid-j] = fkap[mid+j]
-        end
-        mid += Lvec[i] + Lvec[i+1] + 1
-    end
-
-    midpts[Q] = mid
-    fkap[mid] = 1.0
-    for j = 1:Lvec[Q]
-        fkap[mid+j] = exp(-(delta*j/hdisc[Q])^2/2)
-        fkap[mid-j] = fkap[mid+j]
-    end
-
-    ## Combine kernel weights and grid counts
-    for k = 1:M
-        if xcounts[k] != 0.0
-            for i in 1:Q
-                for j in max(1, k-Lvec[i]):min(M, k+Lvec[i])
-                    if indic[j] == i
-                        fac = 1.0
-                        fkap_kmjmpi = fkap[k-j+midpts[i]]
-                        @inbounds ss[j, 1] += xcounts[k]*fkap_kmjmpi
-                        @inbounds tt[j, 1] += ycounts[k]*fkap_kmjmpi
-                        for ii = 2:ppp
-                            fac *= delta * (k-j)
-                            @inbounds ss[j, ii] += xcounts[k]*fkap_kmjmpi*fac
-                            if ii <= pp
-                                @inbounds tt[j, ii] += ycounts[k]*fkap_kmjmpi*fac
-                            end
-                        end
-                    end
-                end
-            end
-        end
-    end
-
-    for k in 1:M
-        for i in 1:pp
-            for j in 1:pp
-                indss = i + j - 1
-
-                Smat[i,j] = ss[k,indss]
-            end
-            Tvec[i] = tt[k,i]
-        end
-
-        # call dgefa(Smat,ipp,ipp,ipvt,info)
-        # call dgesl(Smat,ipp,ipp,ipvt,Tvec,0)
-
-        #Tvec = (Smat \ Tvec)
-
-        curvest[k] = (Smat \ Tvec)[drv+1]
-    end
 
     curvest = gamma(drv+1) .* curvest
 
     (gpoints, curvest)
 end
+
 locpoly{T<:FloatingPoint}(x::Vector{T}, bandwidth::Union(T, Vector{T}); args...) = locpoly(x, Float64[], bandwidth, args...)
