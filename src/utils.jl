@@ -52,18 +52,18 @@ function rlbin{T<:FloatingPoint}(X::Vector{T}, Y::Vector{T}, gpoints::Vector{T},
         if  1 <= li < M
             xcnts[li] += 1-rem
             xcnts[li+1] += rem
-            ycnts[li] += (1-rem) * y[i]
-            ycnts[li+1] += rem * y[i]
+            ycnts[li] += (1-rem) * Y[i]
+            ycnts[li+1] += rem * Y[i]
         end
 
         if (li < 1 && !truncate)
             xcnts[1] += 1.0
-            ycnts[1] += y[i]
+            ycnts[1] += Y[i]
         end
 
         if li >= M && !truncate
             xcnts[M] += 1.0
-            ycnts[M] += y[i]
+            ycnts[M] += Y[i]
         end
     end
 

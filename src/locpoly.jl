@@ -4,7 +4,6 @@
 ## The data are discretised on an equally
 ## spaced grid. The bandwidths are discretised on a
 ## logarithmically spaced grid.
-
 function locpoly{T<:FloatingPoint}(x::Vector{T}, y::Vector{T}, bandwidth::Union(T, Vector{T});
     drv::Int = 0,
     degree::Int=drv+1,
