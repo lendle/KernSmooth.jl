@@ -1,33 +1,20 @@
 ## For application of linear binning to a univariate data set.
 function linbin{T<:FloatingPoint}(X::Vector{T}, gpoints::Vector{T}, truncate::Bool = true)
+    n = length(X)
     M = length(gpoints)
 
     a = gpoints[1]
     b = gpoints[M]
 
-    gcnts = zeros(M)
-    delta = (b-a)/(M-1.0)
-    for i in 1:length(X)
-        lxi = (X[i]-a)/delta + 1
+    trun = truncate? 1: 0
 
-        li = ifloor(lxi)
+    res = Array(Float64, M)
 
-        rem = lxi - li
+    ccall((:linbin_, libkernsmooth), Ptr{Void},
+             (Ptr{Float64}, Ptr{Int}, Ptr{Float64}, Ptr{Float64}, Ptr{Int}, Ptr{Int}, Ptr{Float64}),
+             X, &n, &a, &b, &M, &trun, res)
 
-        if 1 <= li < M
-            gcnts[li] += (1-rem)
-            gcnts[li+1] += rem
-        end
-
-        if li < 1 && !truncate
-            gcnts[1] += 1.0
-        end
-
-        if li >= M && !truncate
-            gcnts[M] += 1.0
-        end
-    end
-    gcnts
+    res
 end
 
 
