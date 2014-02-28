@@ -30,3 +30,4 @@ locpoly{T<:FloatingPoint}(x::Vector{T}, bandwidth::Union(T, Vector{T}); args...)
 * `y` - vector of y data. For density estimation (of `x`), `y` should be omitted or be an empty `Vector{T}`
 * `bandwidth` - should be a scalar or vector of length `gridsize`
 * Other arguments are optional. For their descriptions, see the [R documentation](https://stat.ethz.ch/R-manual/R-devel/library/KernSmooth/html/locpoly.html)
+
