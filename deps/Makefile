@@ -2,7 +2,7 @@
 WORD_SIZE := $(shell julia -e "print(WORD_SIZE)")
 
 
-%o: %f
+%.o: %.f
 	gfortran -m$(WORD_SIZE) -fpic -O3 -pipe -g -c $< -o $@
 
 libkernsmooth.so: locpoly.o linbin.o rlbin.o dgefa.o dgesl.o
