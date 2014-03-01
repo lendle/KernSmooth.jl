@@ -48,7 +48,6 @@ xgrid, yhat = locpoly(X, Y, 1.0)
 #plot results with Winston
 using Winston
 
-xgrid, yhat = locpoly(X, Y, 1.0)
 ytrue = sin(xgrid) + xgrid ./15.0
 
 p = FramedPlot(xrange=(-30, 30), yrange = (-4,4))
