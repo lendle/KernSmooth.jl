@@ -14,3 +14,6 @@ resx, resy= locpoly(x, y, 0.25)
 @test_approx_eq_eps(maximum(abs(resy - expected[:,2])), 0.0, sqrt(eps(Float64)))
 
 @test !any(isnan(resy))
+
+#example from R function
+@test_approx_eq dpill(x, y) 0.238350165926485

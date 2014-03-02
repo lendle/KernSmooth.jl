@@ -6,12 +6,13 @@ else
 	INTFLAG =
 endif
 
+OBJS = dqrsl.o dqrdc.o dgefa.o dgesl.o sdiag.o sstdiag.o blkest.o cp.o linbin.o locpoly.o rlbin.o dgedi.o
 
 %.o: %.f Makefile
 	gfortran -m$(WORD_SIZE) $(INTFLAG) -fpic -O3 -pipe -g -c $< -o $@
 
-libkernsmooth.so: locpoly.o linbin.o rlbin.o dgefa.o dgesl.o
-	gcc -std=gnu99 -shared -o libkernsmooth.so dgefa.o dgesl.o linbin.o locpoly.o rlbin.o -lblas -lgfortran
+libkernsmooth.so: locpoly.o $(OBJS)
+	gcc -std=gnu99 -shared -o libkernsmooth.so $(OBJS) -lblas -lgfortran
 
 clean:
 	rm -rf *o

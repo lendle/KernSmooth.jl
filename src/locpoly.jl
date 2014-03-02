@@ -62,40 +62,40 @@ function locpoly(x::Vector{Float64}, y::Vector{Float64}, bandwidth::Union(Float6
     ## Set the bin width
     delta = (b-a)/(M-1)
 
-    indc = Float64[]
-    Lvec = Int[]
-    hdisc = Float64[]
-    indic = Int[]
-    ## Discretise the bandwidths
-    if length(bandwidth) == M
-        hlow = minimum(bandwidth)
-        hupp = maximum(bandwidth)
-        hdisc = [exp(h) for h in linspace(log(hlow),log(hupp),Q)]
+    # Lvec = Int[]
+    # hdisc = Float64[]
+    # indic = Int[]
+    # ## Discretise the bandwidths
+    # if length(bandwidth) == M
+    #     hlow = minimum(bandwidth)
+    #     hupp = maximum(bandwidth)
+    #     hdisc = [exp(h) for h in linspace(log(hlow),log(hupp),Q)]
 
-        ## Determine value of L for each member of "hdisc"
-        Lvec = [ifloor(tau*h/delta) for h in hdisc]
+    #     ## Determine value of L for each member of "hdisc"
+    #     Lvec = [ifloor(tau*h/delta) for h in hdisc]
 
-        ## Determine index of closest entry of "hdisc"
-        ## to each member of "bandwidth"
-        indic = if Q > 1
-                    gap = (log(hdisc[Q])-log(hdisc[1]))/(Q-1)
-                    if gap == 0
-                        ones(Int, M)
-                    else
-                        lhlow = log(hlow)
-                        [iround((log(b) - lhlow)/gap + 1.0) for b in bandwidth]
-                    end
-                else
-                    ones(Int, M)
-                end
-    elseif length(bandwidth) == 1
-        indic = ones(Int, M)
-        Q = 1
-        Lvec = fill(ifloor(tau*bandwidth/delta), Q)
-        hdisc = fill(bandwidth, Q)
-    else
-        error("'bandwidth' must be a vector of length one or of length 'gridsize'")
-    end
+    #     ## Determine index of closest entry of "hdisc"
+    #     ## to each member of "bandwidth"
+    #     indic = if Q > 1
+    #                 gap = (log(hdisc[Q])-log(hdisc[1]))/(Q-1)
+    #                 if gap == 0
+    #                     ones(Int, M)
+    #                 else
+    #                     lhlow = log(hlow)
+    #                     [iround((log(b) - lhlow)/gap + 1.0) for b in bandwidth]
+    #                 end
+    #             else
+    #                 ones(Int, M)
+    #             end
+    # elseif length(bandwidth) == 1
+    #     indic = ones(Int, M)
+    #     Q = 1
+    #     Lvec = fill(ifloor(tau*bandwidth/delta), Q)
+    #     hdisc = fill(bandwidth, Q)
+    # else
+    #     error("'bandwidth' must be a vector of length one or of length 'gridsize'")
+    # end
+    (indic, Q, Lvec, hdisc) = discretise_the_bandwidths(bandwidth, M, Q, tau, delta)
 
     if minimum(Lvec) == 0
         error("Binning grid too coarse for current (small) bandwidth: consider increasing 'gridsize'")
