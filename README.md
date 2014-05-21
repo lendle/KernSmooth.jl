@@ -2,6 +2,8 @@
 
 [![Build Status](https://travis-ci.org/lendle/KernSmooth.jl.png)](https://travis-ci.org/lendle/KernSmooth.jl)
 
+[![PackageEvaluator](http://iainnz.github.io/packages.julialang.org/badges/KernSmooth_0.3.svg)](https://github.com/IainNZ/PackageEvaluator.jl)
+
 ## About
 
 KernSmooth.jl is the a partial port of the R package [KernSmooth](http://cran.r-project.org/web/packages/KernSmooth/index.html), (v2.23-10.)
